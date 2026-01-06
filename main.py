@@ -117,12 +117,15 @@ def get_ai_analysis(symbol, info, news):
         news_text = "\n".join(headlines)
     
     prompt = f"""
-    Act as a senior financial analyst. Analyze {symbol} based on this data:
+    Act as a senior financial analyst. Analyze {symbol} based on:
     [FINANCIALS] Margins: {info.get('profitMargins', 0)*100:.1f}%, ROE: {info.get('returnOnEquity', 0)*100:.1f}%, PEG: {info.get('pegRatio', 'N/A')}, P/E: {info.get('trailingPE', 'N/A')}
     [NEWS] {news_text}
     [SUMMARY] {info.get('longBusinessSummary', '')[:800]}...
     
-    TASK: Provide JSON with keys: "moat" (String, max 2 sentences), "catalysts" (List of strings), "risks" (List of strings).
+    TASK: JSON with keys: 
+    1. "moat": (String) Start with "Wide", "Narrow", or "None". Then explain why in 1 sentence.
+    2. "catalysts": (List of strings) 2 growth drivers.
+    3. "risks": (List of strings) 2 downside risks.
     """
     
     try:
