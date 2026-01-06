@@ -13,7 +13,7 @@ export function FinancialChart({ title, data, color = "#f08c00", formatCurrency 
 
   return (
     <Card padding="lg" radius="md" shadow="sm" bg="white" h="100%">
-      <Text size="md" fw={700} c="dimmed" tt="uppercase" mb="md" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <Text size="md" fw={700} c="black" tt="uppercase" mb="md" style={{ fontFamily: 'Poppins, sans-serif' }}>
         {title}
       </Text>
 

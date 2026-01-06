@@ -137,7 +137,7 @@ function App() {
                 <Card padding="xl" radius="lg" shadow="sm" mb="lg" bg="white">
                     <Group justify="space-between" mb="lg" align="flex-end">
                         <div>
-                            <Text size="xl" fw={700} ff="Poppins, sans-serif" c="dimmed">{stockData.symbol}</Text>
+                            <Text size="xl" fw={700} ff="Poppins, sans-serif" c="black">{stockData.symbol}</Text>
                             <Group gap="xs" align="center">
                                 <Text size="40px" fw={700} ff="Poppins, sans-serif" lh={1} c="#333">
                                     ${stockData.price}
