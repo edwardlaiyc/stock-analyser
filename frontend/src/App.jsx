@@ -5,6 +5,7 @@ import { AnalysisCard } from './components/AnalysisCard';
 import { FinancialsGrid } from './components/FinancialsGrid';
 import '@mantine/core/styles.css';
 
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 const theme = createTheme({
   fontFamily: 'Inter, sans-serif',
   headings: { fontFamily: 'Poppins, sans-serif' },
@@ -38,7 +39,7 @@ function App() {
     setSearchValue(query);
     if (query.length > 0) {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/search?q=${query}`);
+        const response = await fetch(`${API_URL}/search?q=${query}`);
         const data = await response.json();
         setSuggestions(data); 
       } catch (error) {
@@ -50,7 +51,7 @@ function App() {
   const fetchChartHistory = async (symbol, period) => {
     setChartLoading(true);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/history?symbol=${symbol}&period=${period}`);
+      const res = await fetch(`${API_URL}/history?symbol=${symbol}&period=${period}`);
       const data = await res.json();
       setChartData(data);
     } catch (error) {
@@ -67,10 +68,10 @@ function App() {
     
     try {
       const [priceRes, histRes, fundRes, finRes] = await Promise.all([
-        fetch(`http://127.0.0.1:8000/quote?symbol=${symbol}`),
-        fetch(`http://127.0.0.1:8000/history?symbol=${symbol}&period=${timeframe}`),
-        fetch(`http://127.0.0.1:8000/fundamentals?symbol=${symbol}`),
-        fetch(`http://127.0.0.1:8000/financials?symbol=${symbol}`)
+        fetch(`${API_URL}/quote?symbol=${symbol}`),
+        fetch(`${API_URL}/history?symbol=${symbol}&period=${timeframe}`),
+        fetch(`${API_URL}/fundamentals?symbol=${symbol}`),
+        fetch(`${API_URL}/financials?symbol=${symbol}`)
       ]);
 
       const priceData = await priceRes.json();
