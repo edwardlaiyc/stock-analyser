@@ -18,5 +18,25 @@ A full-stack stock analysis platform that combines real-time stock data with Gen
 * **Self-Healing Data:** Automatically scrapes Wikipedia for S&P 500 tickers if the database is empty.
 * **Financial Visuals:** Interactive charts for Revenue, Free Cash Flow, and EPS history.
 
-## 📄 License
-MIT License
+## Local Setup
+**Backend (Python)**
+```bash
+git clone [https://github.com/yourusername/ai-investment-dashboard.git](https://github.com/yourusername/ai-investment-dashboard.git)
+cd ai-investment-dashboard
+```
+
+# Setup & Run
+```
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+echo "GEMINI_API_KEY=your_key_here" > .env
+uvicorn main:app --reload
+```
+
+**Frontend (React)**
+```
+cd frontend
+npm install
+npm run dev
+```
