@@ -3,3 +3,5 @@ uvicorn
 yfinance
 google-genai
 python-dotenv
+lxml
+requests

@@ -6,6 +6,8 @@ from google import genai
 import json
 import os
 import math
+import pandas as pd
+import requests
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
@@ -23,12 +25,54 @@ app.add_middleware(
 )
 
 def init_db():
-    conn = sqlite3.connect('stocks.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS stocks (symbol TEXT, name TEXT)''')
-    c.execute('''CREATE TABLE IF NOT EXISTS ai_cache (symbol TEXT PRIMARY KEY, data TEXT, timestamp DATETIME)''')
-    conn.commit()
-    conn.close()
+    try:
+        conn = sqlite3.connect('stocks.db')
+        c = conn.cursor()
+        c.execute('''CREATE TABLE IF NOT EXISTS stocks (symbol TEXT, name TEXT)''')
+        c.execute('''CREATE TABLE IF NOT EXISTS ai_cache (symbol TEXT PRIMARY KEY, data TEXT, timestamp DATETIME)''')
+        
+        c.execute("SELECT count(*) FROM stocks")
+        count = c.fetchone()[0]
+        
+        if count == 0:
+            print("Database is empty. Attempting to fetch S&P 500...")
+            try:
+                url = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+                headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+                
+                response = requests.get(url, headers=headers)
+                response.raise_for_status()
+                
+                tables = pd.read_html(response.text)
+                sp500_df = tables[0]
+                
+                symbols = sp500_df[['Symbol', 'Security']].values.tolist()
+                
+                c.executemany("INSERT INTO stocks (symbol, name) VALUES (?, ?)", symbols)
+                conn.commit()
+                print(f"SUCCESS: Added {len(symbols)} S&P 500 stocks from Wikipedia!")
+                
+            except Exception as e:
+                print(f"Scraping failed ({e}). Using manual fallback list.")
+                initial_stocks = [
+                    ('AAPL', 'Apple Inc.'), ('MSFT', 'Microsoft Corp.'), ('NVDA', 'NVIDIA Corp.'),
+                    ('GOOGL', 'Alphabet Inc.'), ('AMZN', 'Amazon.com Inc.'), ('META', 'Meta Platforms'),
+                    ('TSLA', 'Tesla Inc.'), ('BRK.B', 'Berkshire Hathaway'), ('LLY', 'Eli Lilly'),
+                    ('AVGO', 'Broadcom Inc.'), ('V', 'Visa Inc.'), ('JPM', 'JPMorgan Chase'),
+                    ('WMT', 'Walmart Inc.'), ('XOM', 'Exxon Mobil'), ('MA', 'Mastercard Inc.'),
+                    ('PG', 'Procter & Gamble'), ('COST', 'Costco Wholesale'), ('JNJ', 'Johnson & Johnson'),
+                    ('HD', 'Home Depot'), ('MRK', 'Merck & Co.'), ('ABBV', 'AbbVie Inc.'),
+                    ('KO', 'Coca-Cola'), ('PEP', 'PepsiCo'), ('BAC', 'Bank of America'),
+                    ('CRM', 'Salesforce'), ('NFLX', 'Netflix'), ('AMD', 'Advanced Micro Devices'),
+                    ('QCOM', 'Qualcomm'), ('INTC', 'Intel'), ('DIS', 'Disney'), ('T', 'AT&T')
+                ]
+                c.executemany("INSERT INTO stocks VALUES (?,?)", initial_stocks)
+                conn.commit()
+
+        conn.close()
+        
+    except Exception as e:
+        print(f"Database Initialization Error: {e}")
 
 init_db()
 
